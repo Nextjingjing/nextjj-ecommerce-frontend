@@ -5,10 +5,22 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+}
+
 export interface LoginResponse {
   status: string;
   message: string;
-  username?: string;
+}
+
+export interface UserResponse {
+  status: string;
+  message: string;
+  username: string;
+  email: string;
 }
 
 export const login = async (data: LoginRequest): Promise<LoginResponse> => {
@@ -20,7 +32,7 @@ export const logout = async (): Promise<void> => {
   await api.post("/auth/logout");
 };
 
-export const fetchProfile = async (): Promise<{ username: string }> => {
-  const res = await api.get<{ username: string }>("/auth/me");
+export const register = async (data: RegisterRequest): Promise<UserResponse> => {
+  const res = await api.post<UserResponse>("/auth/register", data);
   return res.data;
 };
