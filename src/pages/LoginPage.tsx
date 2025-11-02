@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { login } from "../api/authApi";
-import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../store/store";
+import { loginSuccess } from "../store/authSlice";
 
 export default function LoginPage() {
-  const { login: saveUser } = useAuth();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
@@ -18,7 +20,7 @@ export default function LoginPage() {
     try {
       const res = await login({ username, password });
       if (res.status === "success") {
-        saveUser(username); // ✅ update context
+        dispatch(loginSuccess(username)); 
         navigate("/");
       } else {
         setMessage(res.message || "เข้าสู่ระบบไม่สำเร็จ");

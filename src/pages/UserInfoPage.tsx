@@ -137,7 +137,7 @@ const UserInfoPage: React.FC = () => {
                   value={formData.tel}
                   onChange={handleChange}
                   className="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-                  placeholder="เช่น 0812345678"
+                  placeholder="เช่น 0812345xxx"
                 />
               ) : (
                 <p>{user.tel}</p>

@@ -1,20 +1,25 @@
 import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState, AppDispatch } from "../store/store";
+import { logout } from "../store/authSlice"; // ✅ action จาก Redux
 import { logout as apiLogout } from "../api/authApi";
 
 export default function Header() {
-  const { username, logout } = useAuth();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // ✅ ดึง username จาก Redux แทน Context
+  const username = useSelector((state: RootState) => state.auth.username);
+
   const handleLogout = async () => {
     try {
-      await apiLogout();
+      await apiLogout(); // เรียก API logout ถ้ามี
     } catch (err) {
       console.error(err);
     } finally {
-      logout();
+      dispatch(logout()); // ✅ ใช้ Redux action
       navigate("/login");
       setMenuOpen(false);
     }
@@ -34,7 +39,7 @@ export default function Header() {
           🛍️ NextJJ Shop
         </Link>
 
-        {/* ปุ่ม hamburger (แสดงเฉพาะมือถือ) */}
+        {/* ปุ่ม hamburger (มือถือ) */}
         <button
           className="md:hidden text-gray-700 focus:outline-none"
           onClick={toggleMenu}
@@ -47,7 +52,12 @@ export default function Header() {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           ) : (
             <svg
@@ -57,7 +67,12 @@ export default function Header() {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           )}
         </button>
@@ -69,7 +84,9 @@ export default function Header() {
             end
             className={({ isActive }) =>
               `font-medium ${
-                isActive ? "text-blue-600" : "text-gray-600 hover:text-blue-500"
+                isActive
+                  ? "text-blue-600"
+                  : "text-gray-600 hover:text-blue-500"
               }`
             }
           >
@@ -79,7 +96,9 @@ export default function Header() {
             to="/cart"
             className={({ isActive }) =>
               `font-medium ${
-                isActive ? "text-blue-600" : "text-gray-600 hover:text-blue-500"
+                isActive
+                  ? "text-blue-600"
+                  : "text-gray-600 hover:text-blue-500"
               }`
             }
           >
@@ -89,7 +108,9 @@ export default function Header() {
             to="/about"
             className={({ isActive }) =>
               `font-medium ${
-                isActive ? "text-blue-600" : "text-gray-600 hover:text-blue-500"
+                isActive
+                  ? "text-blue-600"
+                  : "text-gray-600 hover:text-blue-500"
               }`
             }
           >

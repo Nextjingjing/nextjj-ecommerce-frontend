@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { register as apiRegister } from "../api/authApi";
-import { useAuth } from "../contexts/AuthContext";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../store/store";
+import { loginSuccess } from "../store/authSlice"; // ✅ ใช้ action จาก Redux
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const dispatch = useDispatch<AppDispatch>();
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -43,7 +46,9 @@ export default function RegisterPage() {
       });
 
       if (res.status === "success") {
-        login(formData.username);
+        // ✅ ใช้ Redux loginSuccess แทน useAuth()
+        dispatch(loginSuccess(formData.username));
+
         setMessage("สมัครสมาชิกสำเร็จ! กำลังเข้าสู่ระบบ...");
         setTimeout(() => navigate("/"), 1000);
       } else {
@@ -125,9 +130,7 @@ export default function RegisterPage() {
             }`}
           />
           {formData.confirmPassword && !passwordsMatch && (
-            <p className="text-red-500 text-sm mt-1">
-              ⚠️ รหัสผ่านไม่ตรงกัน
-            </p>
+            <p className="text-red-500 text-sm mt-1">⚠️ รหัสผ่านไม่ตรงกัน</p>
           )}
         </div>
 
