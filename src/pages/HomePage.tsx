@@ -37,7 +37,7 @@ function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-100 to-slate-50 py-10">
+    <div className="min-h-screen bg-linear-to-b from-slate-100 to-slate-50 py-10">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-10">
