@@ -2,26 +2,27 @@ import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../store/store";
-import { logout } from "../store/authSlice"; // ✅ action จาก Redux
+import { logout } from "../store/authSlice";
 import { logout as apiLogout } from "../api/authApi";
 
 export default function Header() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false); // ✅ dropdown user
 
-  // ✅ ดึง username จาก Redux แทน Context
   const username = useSelector((state: RootState) => state.auth.username);
 
   const handleLogout = async () => {
     try {
-      await apiLogout(); // เรียก API logout ถ้ามี
+      await apiLogout();
     } catch (err) {
       console.error(err);
     } finally {
-      dispatch(logout()); // ✅ ใช้ Redux action
+      dispatch(logout());
       navigate("/login");
       setMenuOpen(false);
+      setUserMenuOpen(false);
     }
   };
 
@@ -29,7 +30,7 @@ export default function Header() {
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
-      <nav className="max-w-6xl mx-auto flex items-center justify-between p-4">
+      <nav className="max-w-6xl mx-auto flex items-center justify-between p-4 relative">
         {/* โลโก้ */}
         <Link
           to="/"
@@ -119,19 +120,51 @@ export default function Header() {
         </div>
 
         {/* เมนูผู้ใช้ (desktop) */}
-        <div className="hidden md:flex items-center space-x-4">
+        <div className="hidden md:flex items-center space-x-4 relative">
           {username ? (
-            <>
-              <span className="text-gray-700 font-medium whitespace-nowrap">
-                👋 สวัสดี, {username}
-              </span>
+            <div className="relative">
               <button
-                onClick={handleLogout}
-                className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition"
+                onClick={() => setUserMenuOpen((prev) => !prev)}
+                className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg transition"
               >
-                ออกจากระบบ
+                🤗 {username}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-4 w-4 transition-transform ${
+                    userMenuOpen ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
               </button>
-            </>
+
+              {/* ✅ dropdown menu */}
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50">
+                  <NavLink
+                    to="/info"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
+                    ข้อมูลของฉัน
+                  </NavLink>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                  >
+                    ออกจากระบบ
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             <>
               <NavLink
@@ -151,7 +184,7 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* เมนูมือถือ */}
+      {/* เมนูมือถือ (เหมือนเดิม) */}
       {menuOpen && (
         <div className="md:hidden bg-white shadow-inner border-t border-gray-100 flex flex-col space-y-2 px-4 pb-4 animate-slide-down">
           <NavLink
@@ -183,9 +216,16 @@ export default function Header() {
                 <span className="block text-gray-700 font-medium py-1">
                   👋 {username}
                 </span>
+                <NavLink
+                  to="/info"
+                  onClick={() => setMenuOpen(false)}
+                  className="block w-full bg-green-500 text-white py-2 rounded-lg text-center hover:bg-green-600 transition"
+                >
+                  ข้อมูลของฉัน
+                </NavLink>
                 <button
                   onClick={handleLogout}
-                  className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
+                  className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition mt-2"
                 >
                   ออกจากระบบ
                 </button>
