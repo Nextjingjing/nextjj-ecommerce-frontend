@@ -10,7 +10,6 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
 
   const [searchParams, setSearchParams] = useSearchParams();
-
   const pageFromUrl = Number(searchParams.get("page")) || 1;
   const apiPage = pageFromUrl - 1;
 
@@ -38,48 +37,66 @@ function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10">
+    <div className="min-h-screen bg-gradient-to-b from-slate-100 to-slate-50 py-10">
       <div className="max-w-6xl mx-auto px-4">
-        <h1 className="text-3xl font-bold mb-8 text-gray-800">สินค้า</h1>
+        {/* Header */}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-extrabold text-slate-800 mb-2 tracking-tight">
+            🛍️ สินค้าทั้งหมด
+          </h1>
+          <p className="text-slate-500 text-lg">
+            ค้นพบสินค้าที่น่าสนใจจากคลังของเรา
+          </p>
+        </div>
 
+        {/* Loading */}
         {loading ? (
-          <div className="text-center text-gray-500 text-lg">กำลังโหลด...</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-pulse">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-xl h-80 shadow-md border border-gray-100"
+              />
+            ))}
+          </div>
         ) : products.length === 0 ? (
-          <p className="text-gray-500">ไม่มีสินค้า</p>
+          <div className="text-center py-20 text-gray-500 text-lg">
+            😢 ไม่มีสินค้าในตอนนี้
+          </div>
         ) : (
           <>
-            {/* สินค้า */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {/* Product grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
 
             {/* Pagination */}
-            <div className="flex justify-center items-center mt-10 space-x-4">
+            <div className="flex justify-center items-center mt-12 space-x-4">
               <button
                 onClick={() => handlePageChange(pageFromUrl - 1)}
                 disabled={pageFromUrl === 1}
-                className={`px-4 py-2 rounded-lg ${
+                className={`px-5 py-2 rounded-lg transition font-medium ${
                   pageFromUrl === 1
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-blue-500 text-white hover:bg-blue-600"
+                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 text-white hover:bg-blue-700 shadow"
                 }`}
               >
                 ก่อนหน้า
               </button>
 
-              <span className="text-gray-700">
+              <span className="text-gray-700 font-semibold">
                 หน้า {pageFromUrl} / {totalPages}
               </span>
 
               <button
                 onClick={() => handlePageChange(pageFromUrl + 1)}
                 disabled={pageFromUrl >= totalPages}
-                className={`px-4 py-2 rounded-lg ${
+                className={`px-5 py-2 rounded-lg transition font-medium ${
                   pageFromUrl >= totalPages
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-blue-500 text-white hover:bg-blue-600"
+                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 text-white hover:bg-blue-700 shadow"
                 }`}
               >
                 ถัดไป

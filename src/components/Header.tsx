@@ -9,7 +9,7 @@ export default function Header() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false); // ✅ dropdown user
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const username = useSelector((state: RootState) => state.auth.username);
 
@@ -29,18 +29,18 @@ export default function Header() {
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
-      <nav className="max-w-6xl mx-auto flex items-center justify-between p-4 relative">
+    <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-lg shadow-sm border-b border-gray-200">
+      <nav className="max-w-7xl mx-auto flex items-center justify-between p-4 relative">
         {/* โลโก้ */}
         <Link
           to="/"
-          className="text-2xl font-bold text-blue-600 flex items-center gap-2"
+          className="text-2xl font-extrabold text-blue-600 flex items-center gap-2 hover:scale-105 transition-transform"
           onClick={() => setMenuOpen(false)}
         >
-          🛍️ NextJJ Shop
+          🛍️ NextJJ <span className="text-gray-700">Shop</span>
         </Link>
 
-        {/* ปุ่ม hamburger (มือถือ) */}
+        {/* Hamburger menu (มือถือ) */}
         <button
           className="md:hidden text-gray-700 focus:outline-none"
           onClick={toggleMenu}
@@ -78,59 +78,42 @@ export default function Header() {
           )}
         </button>
 
-        {/* เมนูหลัก (desktop) */}
-        <div className="hidden md:flex space-x-6">
-          <NavLink
-            to="/"
-            end
-            className={({ isActive }) =>
-              `font-medium ${
-                isActive
-                  ? "text-blue-600"
-                  : "text-gray-600 hover:text-blue-500"
-              }`
-            }
-          >
-            หน้าแรก
-          </NavLink>
-          <NavLink
-            to="/cart"
-            className={({ isActive }) =>
-              `font-medium ${
-                isActive
-                  ? "text-blue-600"
-                  : "text-gray-600 hover:text-blue-500"
-              }`
-            }
-          >
-            ตะกร้า
-          </NavLink>
-          <NavLink
-            to="/about"
-            className={({ isActive }) =>
-              `font-medium ${
-                isActive
-                  ? "text-blue-600"
-                  : "text-gray-600 hover:text-blue-500"
-              }`
-            }
-          >
-            เกี่ยวกับเรา
-          </NavLink>
+        {/* เมนูหลัก (Desktop) */}
+        <div className="hidden md:flex space-x-8">
+          {[
+            { to: "/", label: "หน้าแรก" },
+            { to: "/cart", label: "ตะกร้า" },
+            { to: "/about", label: "เกี่ยวกับเรา" },
+          ].map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end
+              className={({ isActive }) =>
+                `text-lg font-medium transition ${
+                  isActive
+                    ? "text-blue-600 border-b-2 border-blue-600 pb-1"
+                    : "text-gray-700 hover:text-blue-500"
+                }`
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
         </div>
 
-        {/* เมนูผู้ใช้ (desktop) */}
+        {/* ผู้ใช้ */}
         <div className="hidden md:flex items-center space-x-4 relative">
           {username ? (
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen((prev) => !prev)}
-                className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg transition"
+                className="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full transition shadow-sm"
               >
                 🤗 {username}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-4 w-4 transition-transform ${
+                  className={`h-4 w-4 transition-transform duration-200 ${
                     userMenuOpen ? "rotate-180" : ""
                   }`}
                   fill="none"
@@ -146,19 +129,19 @@ export default function Header() {
                 </svg>
               </button>
 
-              {/* ✅ dropdown menu */}
+              {/* Dropdown */}
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50">
+                <div className="absolute right-0 mt-3 w-52 bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden animate-fade-in">
                   <NavLink
                     to="/info"
                     onClick={() => setUserMenuOpen(false)}
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    className="block px-5 py-3 text-gray-700 hover:bg-gray-100 transition"
                   >
                     ข้อมูลของฉัน
                   </NavLink>
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                    className="w-full text-left px-5 py-3 text-red-600 hover:bg-gray-100 transition"
                   >
                     ออกจากระบบ
                   </button>
@@ -169,13 +152,13 @@ export default function Header() {
             <>
               <NavLink
                 to="/login"
-                className="font-medium text-gray-600 hover:text-blue-500"
+                className="text-gray-700 hover:text-blue-600 font-medium transition"
               >
                 เข้าสู่ระบบ
               </NavLink>
               <NavLink
                 to="/register"
-                className="font-medium text-gray-600 hover:text-blue-500"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-full font-medium shadow transition"
               >
                 สมัครสมาชิก
               </NavLink>
@@ -184,33 +167,26 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* เมนูมือถือ (เหมือนเดิม) */}
+      {/* เมนูมือถือ */}
       {menuOpen && (
-        <div className="md:hidden bg-white shadow-inner border-t border-gray-100 flex flex-col space-y-2 px-4 pb-4 animate-slide-down">
-          <NavLink
-            to="/"
-            end
-            onClick={() => setMenuOpen(false)}
-            className="py-2 text-gray-700 font-medium hover:text-blue-600"
-          >
-            หน้าแรก
-          </NavLink>
-          <NavLink
-            to="/cart"
-            onClick={() => setMenuOpen(false)}
-            className="py-2 text-gray-700 font-medium hover:text-blue-600"
-          >
-            ตะกร้า
-          </NavLink>
-          <NavLink
-            to="/about"
-            onClick={() => setMenuOpen(false)}
-            className="py-2 text-gray-700 font-medium hover:text-blue-600"
-          >
-            เกี่ยวกับเรา
-          </NavLink>
+        <div className="md:hidden bg-white border-t border-gray-200 shadow-inner flex flex-col space-y-2 px-4 pb-4 animate-slide-down">
+          {[
+            { to: "/", label: "หน้าแรก" },
+            { to: "/cart", label: "ตะกร้า" },
+            { to: "/about", label: "เกี่ยวกับเรา" },
+          ].map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end
+              onClick={() => setMenuOpen(false)}
+              className="py-2 text-gray-700 font-medium hover:text-blue-600 transition"
+            >
+              {item.label}
+            </NavLink>
+          ))}
 
-          <div className="border-t border-gray-200 pt-2 mt-2">
+          <div className="border-t border-gray-200 pt-3 mt-2">
             {username ? (
               <>
                 <span className="block text-gray-700 font-medium py-1">
@@ -219,7 +195,7 @@ export default function Header() {
                 <NavLink
                   to="/info"
                   onClick={() => setMenuOpen(false)}
-                  className="block w-full bg-green-500 text-white py-2 rounded-lg text-center hover:bg-green-600 transition"
+                  className="block w-full bg-blue-500 text-white py-2 rounded-lg text-center hover:bg-blue-600 transition"
                 >
                   ข้อมูลของฉัน
                 </NavLink>
@@ -235,14 +211,14 @@ export default function Header() {
                 <NavLink
                   to="/login"
                   onClick={() => setMenuOpen(false)}
-                  className="block py-2 text-gray-700 font-medium hover:text-blue-600"
+                  className="block py-2 text-gray-700 font-medium hover:text-blue-600 transition"
                 >
                   เข้าสู่ระบบ
                 </NavLink>
                 <NavLink
                   to="/register"
                   onClick={() => setMenuOpen(false)}
-                  className="block py-2 text-gray-700 font-medium hover:text-blue-600"
+                  className="block py-2 text-gray-700 font-medium hover:text-blue-600 transition"
                 >
                   สมัครสมาชิก
                 </NavLink>
