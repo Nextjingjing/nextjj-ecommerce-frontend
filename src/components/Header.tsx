@@ -14,7 +14,8 @@ import {
   Menu,
   X,
   UserCircle2,
-} from "lucide-react";
+  ClipboardList,
+} from "lucide-react"; // ✅ เพิ่ม ClipboardList สำหรับคำสั่งซื้อ
 
 export default function Header() {
   const dispatch = useDispatch<AppDispatch>();
@@ -62,7 +63,6 @@ export default function Header() {
           </span>
         </Link>
 
-
         {/* ปุ่มเมนูมือถือ */}
         <button
           className="md:hidden text-gray-700 focus:outline-none"
@@ -77,9 +77,10 @@ export default function Header() {
             to="/"
             end
             className={({ isActive }) =>
-              `flex items-center gap-2 text-lg font-medium transition ${isActive
-                ? "text-blue-600 border-b-2 border-blue-600 pb-1"
-                : "text-gray-700 hover:text-blue-500"
+              `flex items-center gap-2 text-lg font-medium transition ${
+                isActive
+                  ? "text-blue-600 border-b-2 border-blue-600 pb-1"
+                  : "text-gray-700 hover:text-blue-500"
               }`
             }
           >
@@ -90,9 +91,10 @@ export default function Header() {
           <NavLink
             to="/cart"
             className={({ isActive }) =>
-              `relative flex items-center gap-2 text-lg font-medium transition ${isActive
-                ? "text-blue-600 border-b-2 border-blue-600 pb-1"
-                : "text-gray-700 hover:text-blue-500"
+              `relative flex items-center gap-2 text-lg font-medium transition ${
+                isActive
+                  ? "text-blue-600 border-b-2 border-blue-600 pb-1"
+                  : "text-gray-700 hover:text-blue-500"
               }`
             }
           >
@@ -108,9 +110,10 @@ export default function Header() {
           <NavLink
             to="/about"
             className={({ isActive }) =>
-              `flex items-center gap-2 text-lg font-medium transition ${isActive
-                ? "text-blue-600 border-b-2 border-blue-600 pb-1"
-                : "text-gray-700 hover:text-blue-500"
+              `flex items-center gap-2 text-lg font-medium transition ${
+                isActive
+                  ? "text-blue-600 border-b-2 border-blue-600 pb-1"
+                  : "text-gray-700 hover:text-blue-500"
               }`
             }
           >
@@ -119,7 +122,7 @@ export default function Header() {
           </NavLink>
         </div>
 
-        {/* ผู้ใช้ */}
+        {/* ผู้ใช้ (Desktop) */}
         <div className="hidden md:flex items-center space-x-4 relative">
           {username ? (
             <div className="relative">
@@ -129,11 +132,11 @@ export default function Header() {
               >
                 <User size={18} />
                 {username}
-                {/* ลูกศรหมุนขึ้นลง */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-4 w-4 transform transition-transform duration-300 ${userMenuOpen ? "rotate-180" : "rotate-0"
-                    }`}
+                  className={`h-4 w-4 transform transition-transform duration-300 ${
+                    userMenuOpen ? "rotate-180" : "rotate-0"
+                  }`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -149,11 +152,21 @@ export default function Header() {
 
               {/* Dropdown ผู้ใช้ */}
               <div
-                className={`absolute right-0 mt-3 w-52 bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 ${userMenuOpen
+                className={`absolute right-0 mt-3 w-52 bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 ${
+                  userMenuOpen
                     ? "opacity-100 translate-y-0 visible"
                     : "opacity-0 -translate-y-3 invisible"
-                  }`}
+                }`}
               >
+                <NavLink
+                  to="/orders"
+                  onClick={() => setUserMenuOpen(false)}
+                  className="flex items-center gap-2 px-5 py-3 text-gray-700 hover:bg-gray-100 transition"
+                >
+                  <ClipboardList size={18} />
+                  คำสั่งซื้อของฉัน
+                </NavLink>
+
                 <NavLink
                   to="/info"
                   onClick={() => setUserMenuOpen(false)}
@@ -162,6 +175,7 @@ export default function Header() {
                   <UserCircle2 size={18} />
                   ข้อมูลของฉัน
                 </NavLink>
+
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center gap-2 text-left px-5 py-3 text-red-600 hover:bg-gray-100 transition"
@@ -201,6 +215,7 @@ export default function Header() {
           >
             <Home size={18} /> หน้าแรก
           </NavLink>
+
           <NavLink
             to="/cart"
             onClick={() => setMenuOpen(false)}
@@ -213,6 +228,7 @@ export default function Header() {
               </span>
             )}
           </NavLink>
+
           <NavLink
             to="/about"
             onClick={() => setMenuOpen(false)}
@@ -227,13 +243,24 @@ export default function Header() {
                 <span className="block text-gray-700 font-medium py-1 flex items-center gap-2">
                   <User size={18} /> {username}
                 </span>
+
+                {/* ✅ เพิ่มลิงก์คำสั่งซื้อในมือถือ */}
+                <NavLink
+                  to="/orders"
+                  onClick={() => setMenuOpen(false)}
+                  className="block w-full bg-yellow-500 text-white py-2 rounded-lg text-center hover:bg-yellow-600 transition mt-2 flex items-center justify-center gap-2"
+                >
+                  <ClipboardList size={18} /> คำสั่งซื้อของฉัน
+                </NavLink>
+
                 <NavLink
                   to="/info"
                   onClick={() => setMenuOpen(false)}
-                  className="block w-full bg-blue-500 text-white py-2 rounded-lg text-center hover:bg-blue-600 transition"
+                  className="block w-full bg-blue-500 text-white py-2 rounded-lg text-center hover:bg-blue-600 transition mt-2 flex items-center justify-center gap-2"
                 >
-                  ข้อมูลของฉัน
+                  <UserCircle2 size={18} /> ข้อมูลของฉัน
                 </NavLink>
+
                 <button
                   onClick={handleLogout}
                   className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition mt-2 flex items-center justify-center gap-2"
