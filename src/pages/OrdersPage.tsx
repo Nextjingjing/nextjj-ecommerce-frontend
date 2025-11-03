@@ -62,17 +62,22 @@ const OrdersPage: React.FC = () => {
                 <span className="font-semibold text-gray-900">
                   {order.totalAmount.toLocaleString()} บาท
                 </span>
-                <button
-                  onClick={() =>
-                    setEditingId(editingId === order.id ? null : order.id)
-                  }
-                  className="text-blue-600 text-sm hover:underline"
-                >
-                  {editingId === order.id ? "ปิด" : "แก้ไข"}
-                </button>
+
+                {/* ✅ แสดงปุ่ม "แก้ไข" เฉพาะถ้า status เป็น PENDING */}
+                {order.status === "PENDING" && (
+                  <button
+                    onClick={() =>
+                      setEditingId(editingId === order.id ? null : order.id)
+                    }
+                    className="text-blue-600 text-sm hover:underline"
+                  >
+                    {editingId === order.id ? "ปิด" : "แก้ไข"}
+                  </button>
+                )}
               </div>
 
-              {editingId === order.id && (
+              {/* ✅ แสดง editor เฉพาะตอนกดแก้ */}
+              {editingId === order.id && order.status === "PENDING" && (
                 <div className="mt-3 border-t pt-3">
                   <OrderEditor order={order} onUpdated={handleOrderUpdated} />
                 </div>
