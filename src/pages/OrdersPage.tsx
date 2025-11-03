@@ -7,12 +7,19 @@ import toast from "react-hot-toast";
 const OrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<OrderResponseDTO[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<"PENDING" | "PAID">("PENDING"); // ✅ state สำหรับแท็บ
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const res = await getOrders();
-        setOrders(res.content);
+
+        // ✅ เรียงจากใหม่ → เก่า
+        const sorted = res.content.sort(
+          (a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime()
+        );
+
+        setOrders(sorted);
       } catch {
         toast.error("ไม่สามารถโหลดข้อมูลคำสั่งซื้อได้");
       }
@@ -21,20 +28,61 @@ const OrdersPage: React.FC = () => {
   }, []);
 
   const handleOrderUpdated = (updated: OrderResponseDTO) => {
-    setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
+    setOrders((prev) =>
+      prev
+        .map((o) => (o.id === updated.id ? updated : o))
+        .sort((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime())
+    );
     toast.success(`อัปเดตคำสั่งซื้อ #${updated.id} สำเร็จ`);
     setEditingId(null);
   };
+
+  // ✅ แยกตามสถานะ
+  const pendingOrders = orders.filter((o) => o.status === "PENDING");
+  const paidOrders = orders.filter((o) => o.status === "PAID");
+
+  // ✅ เลือกกลุ่มที่จะโชว์ตามแท็บ
+  const currentOrders = activeTab === "PENDING" ? pendingOrders : paidOrders;
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">คำสั่งซื้อของฉัน</h1>
 
-      {orders.length === 0 ? (
-        <p className="text-gray-500 text-center">ยังไม่มีคำสั่งซื้อ</p>
+      {/* 🔹 ปุ่มเลือกสถานะ */}
+      <div className="flex justify-center mb-6 space-x-4">
+        <button
+          onClick={() => setActiveTab("PENDING")}
+          className={`px-4 py-2 rounded-lg font-medium transition ${
+            activeTab === "PENDING"
+              ? "bg-yellow-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          🕓 รอชำระเงิน ({pendingOrders.length})
+        </button>
+
+        <button
+          onClick={() => setActiveTab("PAID")}
+          className={`px-4 py-2 rounded-lg font-medium transition ${
+            activeTab === "PAID"
+              ? "bg-green-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          ✅ ชำระแล้ว ({paidOrders.length})
+        </button>
+      </div>
+
+      {/* 🔹 แสดงรายการตามแท็บ */}
+      {currentOrders.length === 0 ? (
+        <p className="text-gray-500 text-center">
+          {activeTab === "PENDING"
+            ? "ยังไม่มีคำสั่งซื้อที่รอชำระเงิน"
+            : "ยังไม่มีคำสั่งซื้อที่ชำระแล้ว"}
+        </p>
       ) : (
         <div className="grid gap-4">
-          {orders.map((order) => (
+          {currentOrders.map((order) => (
             <div
               key={order.id}
               className="border border-gray-200 rounded-xl p-4 shadow-sm bg-white"
@@ -63,7 +111,7 @@ const OrdersPage: React.FC = () => {
                   {order.totalAmount.toLocaleString()} บาท
                 </span>
 
-                {/* ✅ แสดงปุ่ม "แก้ไข" เฉพาะถ้า status เป็น PENDING */}
+                {/* แก้ไขได้เฉพาะ PENDING */}
                 {order.status === "PENDING" && (
                   <button
                     onClick={() =>
@@ -76,7 +124,6 @@ const OrdersPage: React.FC = () => {
                 )}
               </div>
 
-              {/* ✅ แสดง editor เฉพาะตอนกดแก้ */}
               {editingId === order.id && order.status === "PENDING" && (
                 <div className="mt-3 border-t pt-3">
                   <OrderEditor order={order} onUpdated={handleOrderUpdated} />
