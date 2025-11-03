@@ -15,7 +15,7 @@ import {
   X,
   UserCircle2,
   ClipboardList,
-} from "lucide-react"; // ✅ เพิ่ม ClipboardList สำหรับคำสั่งซื้อ
+} from "lucide-react";
 
 export default function Header() {
   const dispatch = useDispatch<AppDispatch>();

@@ -7,7 +7,8 @@ import {
 } from "../store/cartSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
-import { createOrder } from "../api/orders";
+import { createOrder} from "../api/orders";
+import { AlertTriangle } from "lucide-react";
 
 export default function CartPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -68,6 +69,21 @@ export default function CartPage() {
       <Toaster position="top-right" reverseOrder={false} />
 
       <h2 className="text-3xl font-bold mb-6 text-gray-800">ตะกร้าสินค้า</h2>
+      {/* 🔸 กล่องเตือนให้กรอกข้อมูล */}
+      <div className="flex flex-col sm:flex-row items-center justify-between bg-yellow-50 border border-yellow-300 rounded-lg p-4 mb-6 shadow-sm">
+        <div className="flex items-center gap-3 text-yellow-700">
+          <AlertTriangle size={28} className="text-yellow-600" />
+          <h3 className="text-lg font-semibold">
+            ต้องเข้าสู่ระบบก่อน และต้องกรอกข้อมูลจัดส่งให้ครบก่อนจึงจะทำธุรกรรมได้
+          </h3>
+        </div>
+        <button
+          onClick={() => navigate("/info")}
+          className="mt-3 sm:mt-0 bg-yellow-500 hover:bg-yellow-600 text-white font-medium px-4 py-2 rounded-lg transition"
+        >
+          ไปกรอกข้อมูล
+        </button>
+      </div>
 
       <div className="bg-white shadow-md rounded-2xl p-6">
         <ul className="divide-y divide-gray-200">
