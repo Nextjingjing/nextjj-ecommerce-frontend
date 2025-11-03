@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store/store";
+import { useNavigate } from "react-router-dom";
 import { getUserInfo, updateUserInfo } from "../api/userApi";
 import type { UserInfoResponse, UserUpdateRequest } from "../api/userApi";
 
 const UserInfoPage: React.FC = () => {
+  const navigate = useNavigate();
+  const username = useSelector((state: RootState) => state.auth.username); // ✅ ตรวจ username จาก redux
+
   const [user, setUser] = useState<UserInfoResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -15,6 +21,14 @@ const UserInfoPage: React.FC = () => {
     tel: "",
   });
 
+  // ✅ ถ้ายังไม่ login → redirect ไปหน้า /login
+  useEffect(() => {
+    if (!username) {
+      navigate("/login");
+    }
+  }, [username, navigate]);
+
+  // ✅ ดึงข้อมูลผู้ใช้
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,8 +47,8 @@ const UserInfoPage: React.FC = () => {
       }
     };
 
-    fetchData();
-  }, []);
+    if (username) fetchData();
+  }, [username]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -46,20 +60,26 @@ const UserInfoPage: React.FC = () => {
       setUser(updated);
       setIsEditing(false);
       setMessage({ type: "success", text: "บันทึกข้อมูลเรียบร้อยแล้ว ✅" });
-
-      // เคลียร์ข้อความหลัง 3 วินาที
       setTimeout(() => setMessage(null), 3000);
-    } catch (err) {
+    } catch {
       setMessage({ type: "error", text: "เกิดข้อผิดพลาดในการอัปเดตข้อมูล ❌" });
       setTimeout(() => setMessage(null), 3000);
     }
   };
 
   if (loading)
-    return <div className="flex justify-center items-center h-screen text-gray-600 text-lg">กำลังโหลดข้อมูล...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen text-gray-600 text-lg">
+        กำลังโหลดข้อมูล...
+      </div>
+    );
 
   if (error)
-    return <div className="flex justify-center items-center h-screen text-red-500 text-lg">{error}</div>;
+    return (
+      <div className="flex justify-center items-center h-screen text-red-500 text-lg">
+        {error}
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
