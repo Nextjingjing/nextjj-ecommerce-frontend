@@ -1,5 +1,10 @@
 import api from "./axios";
 
+export interface OrderProductRequestDTO {
+  productId: number;
+  quantity: number;
+}
+
 export interface OrderProductResponseDTO {
   productId: number;
   productName: string;
@@ -29,4 +34,16 @@ export interface PagedOrderResponse {
 export const getOrders = async (): Promise<PagedOrderResponse> => {
   const res = await api.get<PagedOrderResponse>("/orders/my-orders");
   return res.data;
+};
+
+export const updateOrderItems = async (
+  id: number,
+  items: OrderProductRequestDTO[]
+): Promise<OrderResponseDTO> => {
+  const res = await api.put<OrderResponseDTO>(`/orders/${id}`, { items });
+  return res.data;
+};
+
+export const deleteOrder = async (id: number): Promise<void> => {
+  await api.delete(`/orders/${id}`);
 };
