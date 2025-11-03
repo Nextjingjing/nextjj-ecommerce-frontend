@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { register as apiRegister } from "../api/authApi";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../store/store";
-import { loginSuccess } from "../store/authSlice"; // ✅ ใช้ action จาก Redux
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -18,7 +17,6 @@ export default function RegisterPage() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ตรวจสอบว่ารหัสผ่านตรงกันไหม
   const passwordsMatch =
     formData.password === formData.confirmPassword &&
     formData.password.length >= 6;
@@ -46,11 +44,9 @@ export default function RegisterPage() {
       });
 
       if (res.status === "success") {
-        // ✅ ใช้ Redux loginSuccess แทน useAuth()
-        dispatch(loginSuccess(formData.username));
-
-        setMessage("สมัครสมาชิกสำเร็จ! กำลังเข้าสู่ระบบ...");
-        setTimeout(() => navigate("/"), 1000);
+        setMessage("✅ สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ");
+        // ✅ ไม่ login อัตโนมัติ แต่ redirect ไปหน้า login
+        setTimeout(() => navigate("/login"), 1500);
       } else {
         setMessage(res.message || "สมัครสมาชิกไม่สำเร็จ");
       }
@@ -134,7 +130,6 @@ export default function RegisterPage() {
           )}
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           disabled={!passwordsMatch || loading}
