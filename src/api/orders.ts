@@ -47,3 +47,14 @@ export const updateOrderItems = async (
 export const deleteOrder = async (id: number): Promise<void> => {
   await api.delete(`/orders/${id}`);
 };
+
+export interface CreateOrderRequestDTO {
+  items: OrderProductRequestDTO[];
+}
+
+export const createOrder = async (
+  request: CreateOrderRequestDTO
+): Promise<OrderResponseDTO> => {
+  const res = await api.post<OrderResponseDTO>("/orders", request);
+  return res.data;
+};
