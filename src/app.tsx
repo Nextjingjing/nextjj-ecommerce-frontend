@@ -7,11 +7,14 @@ import UserInfoPage from "./pages/UserInfoPage";
 import CartPage from "./pages/CartPage";
 import AboutPage from "./pages/AboutPage";
 import OrdersPage from "./pages/OrdersPage";
+import { Toaster } from "react-hot-toast";
+
 
 function App() {
   return (
       <Router>
         <Header />
+        <Toaster position="top-right" />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage/>}/>
