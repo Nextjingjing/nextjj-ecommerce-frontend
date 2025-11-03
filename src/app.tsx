@@ -8,10 +8,14 @@ import CartPage from "./pages/CartPage";
 import AboutPage from "./pages/AboutPage";
 import OrdersPage from "./pages/OrdersPage";
 import { Toaster } from "react-hot-toast";
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 function App() {
   return (
+    <Elements stripe={stripePromise}>
       <Router>
         <Header />
         <Toaster position="top-right" />
@@ -25,6 +29,7 @@ function App() {
           <Route path="/orders" element={<OrdersPage/>}/>
         </Routes>
       </Router>
+    </Elements>
   );
 }
 
