@@ -17,7 +17,7 @@ const handlePay = async (orderId: number) => {
 const OrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<OrderResponseDTO[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<"PENDING" | "PAID">("PENDING"); // ✅ state สำหรับแท็บ
+  const [activeTab, setActiveTab] = useState<"PENDING" | "PAID">("PENDING");
 
   useEffect(() => {
     const fetchOrders = async () => {

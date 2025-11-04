@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   useStripe,
   useElements,
@@ -8,6 +9,7 @@ import {
 const CheckoutForm: React.FC = () => {
   const stripe = useStripe();
   const elements = useElements();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -30,6 +32,9 @@ const CheckoutForm: React.FC = () => {
       setMessage(error.message ?? "เกิดข้อผิดพลาดในการชำระเงิน");
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
       setMessage("✅ ชำระเงินสำเร็จแล้ว!");
+      setTimeout(() => {
+        navigate("/orders");
+      }, 1500)
     } else {
       setMessage("สถานะการชำระเงิน: " + paymentIntent?.status);
     }
