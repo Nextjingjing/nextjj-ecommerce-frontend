@@ -7,6 +7,7 @@ import UserInfoPage from "./pages/UserInfoPage";
 import CartPage from "./pages/CartPage";
 import AboutPage from "./pages/AboutPage";
 import OrdersPage from "./pages/OrdersPage";
+import CheckoutPage from "./pages/CheckoutPage";
 import { Toaster } from "react-hot-toast";
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -23,10 +24,11 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage/>}/>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/register" element={<RegisterPage />}/>
           <Route path="/info" element={<UserInfoPage/>}/>
           <Route path="/cart" element={<CartPage/>}/>
           <Route path="/orders" element={<OrdersPage/>}/>
+          <Route path="/checkout" element={<CheckoutPage />}/>
         </Routes>
       </Router>
     </Elements>

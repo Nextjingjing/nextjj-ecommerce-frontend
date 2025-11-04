@@ -3,6 +3,16 @@ import { getOrders, type OrderResponseDTO } from "../api/orders";
 import OrderEditor from "../components/OrderEditor";
 import OrderStatusBadge from "../components/OrderStatusBadge";
 import toast from "react-hot-toast";
+import { createPaymentIntent } from "../api/paymentApi";
+
+const handlePay = async (orderId: number) => {
+  try {
+    const { clientSecret } = await createPaymentIntent({ orderId });
+    window.location.href = `/checkout?clientSecret=${encodeURIComponent(clientSecret)}`;
+  } catch {
+    toast.error("ไม่สามารถเริ่มการชำระเงินได้");
+  }
+};
 
 const OrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<OrderResponseDTO[]>([]);
@@ -52,22 +62,20 @@ const OrdersPage: React.FC = () => {
       <div className="flex justify-center mb-6 space-x-4">
         <button
           onClick={() => setActiveTab("PENDING")}
-          className={`px-4 py-2 rounded-lg font-medium transition ${
-            activeTab === "PENDING"
+          className={`px-4 py-2 rounded-lg font-medium transition ${activeTab === "PENDING"
               ? "bg-yellow-500 text-white"
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
+            }`}
         >
           🕓 รอชำระเงิน ({pendingOrders.length})
         </button>
 
         <button
           onClick={() => setActiveTab("PAID")}
-          className={`px-4 py-2 rounded-lg font-medium transition ${
-            activeTab === "PAID"
+          className={`px-4 py-2 rounded-lg font-medium transition ${activeTab === "PAID"
               ? "bg-green-500 text-white"
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
+            }`}
         >
           ✅ ชำระแล้ว ({paidOrders.length})
         </button>
@@ -113,14 +121,23 @@ const OrdersPage: React.FC = () => {
 
                 {/* แก้ไขได้เฉพาะ PENDING */}
                 {order.status === "PENDING" && (
-                  <button
-                    onClick={() =>
-                      setEditingId(editingId === order.id ? null : order.id)
-                    }
-                    className="text-blue-600 text-sm hover:underline"
-                  >
-                    {editingId === order.id ? "ปิด" : "แก้ไข"}
-                  </button>
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() =>
+                        setEditingId(editingId === order.id ? null : order.id)
+                      }
+                      className="text-blue-600 text-sm hover:underline"
+                    >
+                      {editingId === order.id ? "ปิด" : "แก้ไข"}
+                    </button>
+
+                    <button
+                      onClick={() => handlePay(order.id)}
+                      className="text-green-600 text-sm hover:underline"
+                    >
+                      💳 จ่ายเลย
+                    </button>
+                  </div>
                 )}
               </div>
 
