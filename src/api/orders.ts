@@ -36,6 +36,14 @@ export const getOrders = async (): Promise<PagedOrderResponse> => {
   return res.data;
 };
 
+export const getAllOrders = async (
+  page = 0,
+  size = 10
+): Promise<PagedOrderResponse> => {
+  const res = await api.get<PagedOrderResponse>(`/orders?page=${page}&size=${size}`);
+  return res.data;
+};
+
 export const updateOrderItems = async (
   id: number,
   items: OrderProductRequestDTO[]

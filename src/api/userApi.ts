@@ -26,3 +26,10 @@ export const updateUserInfo = async (
   const res = await api.put<UserInfoResponse>("/users", data);
   return res.data;
 };
+
+export const getUserInfoById = async (
+  userId: number
+): Promise<UserInfoResponse> => {
+  const res = await api.get<UserInfoResponse>(`/users/info/${userId}`);
+  return res.data;
+};
