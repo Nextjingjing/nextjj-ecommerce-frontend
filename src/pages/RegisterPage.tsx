@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { register as apiRegister } from "../api/authApi";
-import { useDispatch } from "react-redux";
-import type { AppDispatch } from "../store/store";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
 
   const [formData, setFormData] = useState({
     username: "",
