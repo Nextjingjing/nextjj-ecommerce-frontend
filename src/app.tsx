@@ -18,10 +18,17 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useEffect } from "react";
+import axios from "./api/axios";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 function App() {
+  useEffect(() => {
+    axios.get("/api/security/token").catch(() =>
+      console.warn("โหลด CSRF token ไม่สำเร็จ")
+    );
+  }, []);
   return (
     <Elements stripe={stripePromise}>
       <Router>

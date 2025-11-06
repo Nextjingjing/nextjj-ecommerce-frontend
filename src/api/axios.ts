@@ -1,38 +1,46 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
-// 🔹 สร้าง instance ของ axios
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: true, // สำคัญมาก เพื่อส่ง cookie JSESSIONID
+  withCredentials: true, // ✅ สำคัญมาก เพื่อให้ cookie JWT + XSRF ถูกส่งไปกลับได้
 });
 
-// 🔹 โหลด token จาก /security/token หนึ่งครั้งก่อนทำ POST/PUT/DELETE
-let csrfToken: string | null = null;
-
-const fetchCsrfToken = async () => {
-  try {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/security/token`, {
-      withCredentials: true,
-    });
-    csrfToken = res.data.token;
-    // console.log("🔑 CSRF Token Loaded:", csrfToken);
-  } catch (err) {
-    console.error("❌ โหลด CSRF token ไม่สำเร็จ", err);
+// ✅ preload CSRF token เมื่อสร้าง instance
+async function ensureCsrfToken() {
+  const token = Cookies.get("XSRF-TOKEN");
+  if (!token) {
+    console.log("🔄 โหลด CSRF token ใหม่จาก backend...");
+    try {
+      await axios.get(`${import.meta.env.VITE_API_URL}/security/token`, {
+        withCredentials: true,
+      });
+      console.log("✅ โหลด CSRF token สำเร็จ");
+    } catch (err) {
+      console.warn("❌ โหลด CSRF token ไม่สำเร็จ:", err);
+    }
   }
-};
+}
 
-// 🔹 interceptor ก่อนส่ง request
+// ✅ interceptor สำหรับแนบ CSRF token อัตโนมัติ
 api.interceptors.request.use(
   async (config) => {
-    // โหลด token ถ้ายังไม่มี
-    if (!csrfToken) {
-      await fetchCsrfToken();
-    }
-
-    // ถ้าเป็น request ที่ต้องการการป้องกัน CSRF
     const method = config.method?.toUpperCase();
-    if (["POST", "PUT", "DELETE", "PATCH"].includes(method || "") && csrfToken) {
-      config.headers["X-XSRF-TOKEN"] = csrfToken;
+
+    // 🔄 ตรวจสอบก่อนว่า token มีไหม ถ้าไม่มี → preload ใหม่
+    if (["POST", "PUT", "DELETE", "PATCH"].includes(method || "")) {
+      let csrfToken = Cookies.get("XSRF-TOKEN");
+      if (!csrfToken) {
+        await ensureCsrfToken(); // preload จาก backend
+        csrfToken = Cookies.get("XSRF-TOKEN");
+      }
+
+      if (csrfToken) {
+        config.headers["X-XSRF-TOKEN"] = csrfToken;
+        console.log("🛡️ แนบ X-XSRF-TOKEN:", csrfToken);
+      } else {
+        console.warn("⚠️ ไม่พบ XSRF-TOKEN ใน cookie หลัง preload");
+      }
     }
 
     return config;
